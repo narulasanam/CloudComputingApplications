@@ -53,26 +53,6 @@ public class PopularityLeague extends Configured implements Tool {
         FileOutputFormat.setOutputPath(jobA, new Path(args[1]));
 
         jobA.setJarByClass(PopularityLeague.class);
-      /*  jobA.waitForCompletion(true);
-
-        Job jobB = Job.getInstance(conf, "Popularity League");
-        jobB.setOutputKeyClass(IntWritable.class);
-        jobB.setOutputValueClass(IntWritable.class);
-
-        jobB.setMapOutputKeyClass(IntWritable.class);
-        jobB.setMapOutputValueClass(IntWritable.class);
-
-        jobB.setMapperClass(PopularityLeagueMap.class);
-        jobB.setReducerClass(PopularityLeagueReduce.class);
-        jobB.setNumReduceTasks(1);
-
-        FileInputFormat.setInputPaths(jobB, tmpPath);
-        FileOutputFormat.setOutputPath(jobB, new Path(args[1]));
-
-        jobB.setInputFormatClass(KeyValueTextInputFormat.class);
-        jobB.setOutputFormatClass(TextOutputFormat.class);
-
-        jobB.setJarByClass(PopularityLeague.class);*/
         return jobA.waitForCompletion(true) ? 0 : 1;
     }
 
@@ -190,17 +170,13 @@ public class PopularityLeague extends Configured implements Tool {
 	public static class PopularityLeagueReduce extends Reducer<IntWritable, IntWritable, IntWritable, IntWritable> {
 		@Override
         public void reduce(IntWritable key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
-
-//for (Pair<Integer, Integer> item: countToTitleMap) {
 			int sum=0;
 			for (IntWritable val : values) {
 				sum += val.get();
 			}
-				//IntWritable word = new IntWritable(sum);
-				//IntWritable value = new IntWritable(key);
-				context.write(key, new IntWritable(sum));
-			//}
-			
+			//IntWritable word = new IntWritable(sum);
+			//IntWritable value = new IntWritable(key);
+			context.write(key, new IntWritable(sum));		
         }
     }
 }	

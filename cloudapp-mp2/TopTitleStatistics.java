@@ -220,17 +220,20 @@ public class TopTitleStatistics extends Configured implements Tool {
                 //Text word = new Text(item.second);
                 IntWritable value = new IntWritable(item.first);
                 sum = sum + value.get();
-				if ( max < value.get() )
+				
+                if (max < value.get())
 					max = value.get();
-				if (min > value.get())
+				
+                if (min > value.get())
 					min = value.get();				
 				//context.write(word, value);
             }
 			mean = sum/N;
 			for (Pair<Integer, String> item: countToTitleMap) {
 				IntWritable value = new IntWritable(item.first);
-					var += (mean-value.get())*(mean-value.get());
+				var += (mean-value.get())*(mean-value.get());
 			}
+
 			var = var/N;
 			
             context.write(new Text("Mean"), new IntWritable(mean));

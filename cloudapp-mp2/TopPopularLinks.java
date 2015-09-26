@@ -139,8 +139,6 @@ public class TopPopularLinks extends Configured implements Tool {
             // TODO
 			Integer count = Integer.parseInt(value.toString());
             Integer word = Integer.parseInt(key.toString());
-
-			
             countToTitleMap.add(new Pair<Integer, Integer>(count, word));
         }
 		 @Override
@@ -178,13 +176,13 @@ public class TopPopularLinks extends Configured implements Tool {
                     countToTitleMap.remove(countToTitleMap.first());
                 }
             }
+
 			for (Pair<Integer, Integer> item: countToTitleMap) {
 				IntWritable word = new IntWritable(item.first);
 				IntWritable value = new IntWritable(item.second);
 				
 				context.write(value, word);
-			}
-			
+			}			
         }
     }
 }
