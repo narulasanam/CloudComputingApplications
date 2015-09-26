@@ -29,6 +29,15 @@ public class TopNFinderBolt extends BaseBasicBolt {
 
 
     ------------------------------------------------- */
+	
+	String sentence = tuple.getString(0);
+	Integer count = tuple.getInteger(1);
+	sentence= sentence.trim().toLowerCase();
+	Integer value = currentTopWords.get(sentence);
+	if( value == null)
+		currentTopWords.put(sentence,count);
+	else
+		currentTopWords.put(sentence,count+value);
 
 
     //reports the top N words periodically
