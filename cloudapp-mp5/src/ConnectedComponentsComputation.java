@@ -22,9 +22,48 @@ public class ConnectedComponentsComputation extends
    * @throws IOException
    */
   @Override
-  public void compute(
-      Vertex<IntWritable, IntWritable, NullWritable> vertex,
-      Iterable<IntWritable> messages) throws IOException {
+  public void compute(Vertex<IntWritable, IntWritable, NullWritable> vertex, Iterable<IntWritable> messages) throws IOException {
       //TODO
-  }
+	  int currentComponent = vertex.getValue().get();
+
+    // First superstep is special, because we can simply look at the neighbors
+    if (getSuperstep() == 0) {
+      for (Edge<IntWritable, NullWritable> edge : vertex.getEdges()) {
+        int neighbor = edge.getTargetVertexId().get();
+        if (neighbor < currentComponent) {
+          currentComponent = neighbor;
+        }
+      }
+      // Only need to send value if it is not the own id
+      if (currentComponent != vertex.getValue().get()) {
+        vertex.setValue(new IntWritable(currentComponent));
+        for (Edge<IntWritable, NullWritable> edge : vertex.getEdges()) {
+          IntWritable neighbor = edge.getTargetVertexId();
+          if (neighbor.get() > currentComponent) {
+            sendMessage(neighbor, vertex.getValue());
+          }
+        }
+      }
+
+      vertex.voteToHalt();
+      return;
+    }
+
+    boolean changed = false;
+    // did we get a smaller id ?
+    for (IntWritable message : messages) {
+      int candidateComponent = message.get();
+      if (candidateComponent < currentComponent) {
+        currentComponent = candidateComponent;
+        changed = true;
+      }
+    }
+
+    // propagate new component id to the neighbors
+    if (changed) {
+      vertex.setValue(new IntWritable(currentComponent));
+      sendMessageToAllEdges(vertex, vertex.getValue());
+    }
+    vertex.voteToHalt();
+	}
 }
